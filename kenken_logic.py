@@ -48,10 +48,10 @@ def generate_contraints(model:cp_model.CpModel, matrix, *blocks):
                 model.AddMultiplicationEquality(tmp, vars[:2])
                 model.AddMultiplicationEquality(block.r, [tmp, vars[-1]])
             else:
-                tmps = [model.NewIntVar(1, int(1e9), "_tmp_{x}") for _ in range(len(vars)-2)]
+                tmps = [model.NewIntVar(1, int(1e9), f"_tmp_{_}") for _ in range(len(vars)-2)]
                 model.AddMultiplicationEquality(tmps[0], vars[:2])
-                for k, tmp in enumerate(tmps[1:-1]):
-                    model.AddMultiplicationEquality(tmps[k+1], [tmps[k], vars[k+2]])
+                for i in range(0, len(tmps)-1):
+                    model.AddMultiplicationEquality(tmps[i+1], [tmps[i], vars[i+2]])
                 model.AddMultiplicationEquality(block.r, [tmps[-1], vars[-1]])
 
         if block.op == Block.DIV:
