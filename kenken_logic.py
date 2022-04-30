@@ -60,7 +60,9 @@ def generate_contraints(model:cp_model.CpModel, matrix, *blocks):
             bool_a, bool_b = bools
 
             model.Add(va*block.r == vb).OnlyEnforceIf(bool_a)
+            model.Add(va*block.r != vb).OnlyEnforceIf(bool_a.Not())
             model.Add(vb*block.r == va).OnlyEnforceIf(bool_b)
+            model.Add(vb*block.r != va).OnlyEnforceIf(bool_b.Not())
             model.Add(sum(bools) == 1)
 
         if block.op == Block.DIF:
@@ -69,7 +71,9 @@ def generate_contraints(model:cp_model.CpModel, matrix, *blocks):
             bool_a, bool_b = bools
             
             model.Add(va-vb == block.r).OnlyEnforceIf(bool_a)
+            model.Add(va-vb != block.r).OnlyEnforceIf(bool_a.Not())
             model.Add(vb-va == block.r).OnlyEnforceIf(bool_b)
+            model.Add(vb-va != block.r).OnlyEnforceIf(bool_b.Not())
             model.Add(sum(bools) == 1) 
 
 
