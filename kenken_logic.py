@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from ortools.sat.python import cp_model
-import functools, operator
+import functools, operator, time
 
 class Block:
     ADD, DIF, MUL, DIV, SET = range(5)
@@ -94,7 +94,14 @@ def solve(raw_blocks, n):
     matrix = make_matrix(model, n, *blocks)
     generate_contraints(model, matrix, *blocks)
 
+    all_ = list()
+    for l in matrix:
+        all_.extend(l)
+    model.AddDecisionStrategy(all_, cp_model.CHOOSE_FIRST, cp_model.SELECT_MAX_VALUE)
+
+    t_ = time.time()
     status = solver.Solve(model)
+    print(f"tiempo: {time.time() - t_}")
 
     if status == cp_model.OPTIMAL:
         return [
@@ -161,7 +168,23 @@ if __name__ == "__main__":
     matrix = make_matrix(model, n, *blocks)
     generate_contraints(model, matrix, *blocks)
 
+    all_ = []
+    for block in blocks:
+        if block.op == Block.SET:
+            i, j = block.coords[0]
+            all_.append(matrix[j][i])
+    for block in blocks:
+        if block.op == Block.DIF or block.op == Block.DIF:
+            i, j = block.coords[0]
+            all_.append(matrix[j][i])
+            i, j = block.coords[1]
+            all_.append(matrix[j][i])
+
+    model.AddDecisionStrategy(all_, cp_model.CHOOSE_FIRST, cp_model.SELECT_MIN_VALUE)
+
+    t_ = time.time()
     status = solver.Solve(model)
+    print(f"tiempo: {time.time() - t_}")
 
     if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
         for i in range(n):

@@ -1,6 +1,6 @@
 import functools, operator
 from textwrap import indent
-import pygame
+import pygame, time
 import pygame.locals as lcs
 import pygame.time, json
 
@@ -188,8 +188,8 @@ while True:
     
     if draw_boton_if(win, event_ctrl, r_sol, mouse, font, "Solve", (0, 255, 0), (0, 100, 0)):
         result = kenken_logic.solve(grupos, 10)
-
-
+        if result == None:
+            message_box_warning(win, event_ctrl, back, "NO HAY SOLUCIÓN")
 
     if event_ctrl.mouse_up(4):
         scroll += 30
