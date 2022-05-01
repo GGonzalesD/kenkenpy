@@ -94,9 +94,17 @@ def solve(raw_blocks, n):
     matrix = make_matrix(model, n, *blocks)
     generate_contraints(model, matrix, *blocks)
 
-    all_ = list()
-    for l in matrix:
-        all_.extend(l)
+    all_ = []
+    for block in blocks:
+        if block.op == Block.SET:
+            i, j = block.coords[0]
+            all_.append(matrix[j][i])
+    for block in blocks:
+        if block.op == Block.DIV or block.op == Block.DIF:
+            i, j = block.coords[0]
+            all_.append(matrix[j][i])
+            i, j = block.coords[1]
+            all_.append(matrix[j][i])
     model.AddDecisionStrategy(all_, cp_model.CHOOSE_FIRST, cp_model.SELECT_MAX_VALUE)
 
     t_ = time.time()
@@ -174,7 +182,7 @@ if __name__ == "__main__":
             i, j = block.coords[0]
             all_.append(matrix[j][i])
     for block in blocks:
-        if block.op == Block.DIF or block.op == Block.DIF:
+        if block.op == Block.DIV or block.op == Block.DIF:
             i, j = block.coords[0]
             all_.append(matrix[j][i])
             i, j = block.coords[1]
